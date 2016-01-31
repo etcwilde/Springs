@@ -1,5 +1,5 @@
 # Springs
-Spring Mass Systems • Evan Wilde • CSC 473 
+Spring Mass Systems • Evan Wilde • CSC 473
 
 The scenes have a simple interface. In both scenes, the spacebar will start the simulation and
 pause it.
@@ -10,7 +10,7 @@ of gravity. In the angular spring, the link will simply swing to the rest angle 
 
 ## Navigation
 
-Navigation is obtained through use of the mouse. 
+Navigation is obtained through use of the mouse.
 Simply holding the middle mouse button allows the user to tumble the camera to the angle they desire.
 Scrolling allows the user to dolly the camera on increments, whereas the user may hold the CTRL key
 and hold the middle mouse button to dolly smoothly. Holding shift allows the user to track the camera;
@@ -23,8 +23,11 @@ however, the camera will still tumble around the origin of the scene.
 
 ## Linear Spring
 
+
+![Linear Spring](docs/linear.png)
+
 The linear spring system consists of a fixed point and a free mass. All calculations are in the
-Cartesian coordinate system. 
+Cartesian coordinate system.
 
 Integration was done with the basic Euler integrator. For the single spring-mass system, the
 Euler integrator is fully sufficient for handling the calcuations. When we add more springs
@@ -42,11 +45,13 @@ into the system, a more powerful integration method may be necessary.
 
 ## Torision Spring
 
+![Torsion Spring](docs/angular.png)
+
 The torsion spring calculations are performed entirely in spherical coordinates. This coordinate
 system makes sense as the spring is given a fixed point origin and a rod of constant length that
 can move around the fixed point. No calculations were to be performed on the length of the rod,
-and only on the angle that the rod protruded from the fixed point. A mousetrap is an example of 
-this system if the coefficient were set high enough. Unlike the mouse trap, the spring is able to 
+and only on the angle that the rod protruded from the fixed point. A mousetrap is an example of
+this system if the coefficient were set high enough. Unlike the mouse trap, the spring is able to
 rotate with two degrees of freedom, though, in practice this is kind of weird to look at and hard
 to imagine; however, I'm fairly confident in the results we are seeing. While in the CPU, the
 coordinates were entirely in spherical coordinates.
@@ -78,14 +83,14 @@ The torsion spring system adds some additional controls beyond the basic control
 
 The velocity and positions are implemented as two-vectors, since the length of the rod
 is held constant. Removing the length component from the calculations until the data is
-passed to the GPU keeps us from making the mistake of including that in the vector 
+passed to the GPU keeps us from making the mistake of including that in the vector
 calculations. This produces some interesting results, but is utimately not correct.
 
 ## Extra Notes
 
 Unfortunately, the scene switching in Atlas is not yet working correctly. As such, we can
-only comment out the scene we don't want and recompile. Once the implementation within 
-Atlas is working correctly, switching between the scenes will allow the user to view both 
+only comment out the scene we don't want and recompile. Once the implementation within
+Atlas is working correctly, switching between the scenes will allow the user to view both
 without restarting the application.
 
 As Atlas is the framework provided with the course, it is beyond the scope of the assignment
