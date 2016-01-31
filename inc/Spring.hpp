@@ -52,7 +52,6 @@ class AngularSpring : public atlas::utils::Geometry
                 void updateGeometry(atlas::utils::Time const& t) override;
                 void renderGeometry(atlas::math::Matrix4 proj,
                                 atlas::math::Matrix4 view) override;
-                void resetGeometry() override;
 
                 void stepGeometry(atlas::utils::Time const& t);
 

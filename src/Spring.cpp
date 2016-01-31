@@ -10,7 +10,7 @@ Spring::Spring() :
         mPoints({atlas::math::Vector(0, 10, 0), atlas::math::Vector(0, 6, 0)}),
         mVelocity({atlas::math::Vector(0.f), atlas::math::Vector(0.f)}),
         mForce({atlas::math::Vector(0.f), atlas::math::Vector(0.f)}),
-        mMass({10.f, 1.f}),
+        mMass({10.f, 10.f}),
         mLength(4.f),
         mDampen(0.15f),
         mK(4.f),
@@ -120,7 +120,15 @@ void Spring::resetGeometry()
         mVelocity = {Vector(0.f), Vector(0.f)};
         mForce = {Vector(0.f), Vector(0.f)};
         mLength = 1.f;
-        // I think we need to re-upload the position of the first vertex
+
+        // Upload reset vertex data
+        glBindVertexArray(mVao);
+        glBindBuffer(GL_ARRAY_BUFFER, mVbo);
+        glBufferSubData(GL_ARRAY_BUFFER,
+                        0, sizeof(Vector) * 2,
+                        &mPoints[0][0]);
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Spring::moveFixed(atlas::math::Vector vec)
@@ -147,7 +155,7 @@ AngularSpring::AngularSpring() :
         mMass(1.f),
         mRest(0.f, glm::radians(-20.f)),
         mVelocity(0.f),
-        mPosition(glm::radians(45.f), glm::radians(45.f))
+        mPosition(0.f, glm::radians(45.f))
 {
         USING_ATLAS_GL_NS;
         USING_ATLAS_CORE_NS;
@@ -209,31 +217,39 @@ void AngularSpring::stepGeometry(atlas::utils::Time const& t)
         glm::vec2 x = glm::vec2(mPosition.x - mRest.x, mPosition.y - mRest.y);
         glm::vec2 F = glm::vec2(-mK * x) - glm::vec2(mDampen * mVelocity);
 
+#ifdef PROG_DEBUG
         Log::log(Log::SeverityLevel::DEBUG, "Force: (" +
                         std::to_string(mLength) + ", " +
                         std::to_string(F.x) + ", " +
                         std::to_string(F.y) + ")");
+#endif
 
         glm::vec2 a = F / mMass;
 
+#ifdef PROG_DEBUG
         Log::log(Log::SeverityLevel::DEBUG, "Acceleration: (" +
                         std::to_string(mLength) + ", " +
                         std::to_string(a.x) + ", " +
                         std::to_string(a.y) + ")");
+#endif
 
         glm::vec2 v = mVelocity + a * 0.5f;
 
+#ifdef PROG_DEBUG
         Log::log(Log::SeverityLevel::DEBUG, "Velocity: (" +
                         std::to_string(mLength) + ", " +
                         std::to_string(v.x) + ", " +
                         std::to_string(v.y) + ")");
+#endif
 
         glm::vec2 p = mPosition + v * 0.5f;
 
+#ifdef PROG_DEBUG
         Log::log(Log::SeverityLevel::DEBUG, "Position: (" +
                         std::to_string(mLength) + ", " +
                         std::to_string(p.x) + ", " +
                         std::to_string(p.y) + ")");
+#endif
 
         mVelocity = v;
         mPosition = p;
@@ -274,9 +290,4 @@ void AngularSpring::renderGeometry(atlas::math::Matrix4 proj,
         glDrawArrays(GL_LINES, 0, 2);
         glBindVertexArray(0);
         mShaders[0]->disableShaders();
-}
-
-void AngularSpring::resetGeometry()
-{
-
 }

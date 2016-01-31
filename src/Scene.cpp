@@ -21,7 +21,9 @@ LinearScene::~LinearScene() { }
 void LinearScene::mousePressEvent(int b, int a, int m, double x, double y)
 {
         USING_ATLAS_CORE_NS;
+#ifdef PROG_DEBUG
         Log::log(Log::SeverityLevel::DEBUG, "Mouse Press Event: (" + std::to_string(x) + ", " + std::to_string(y) + ")");
+#endif
 
         USING_ATLAS_MATH_NS;
         if(b == GLFW_MOUSE_BUTTON_MIDDLE)
@@ -63,7 +65,9 @@ void LinearScene::scrollEvent(double x, double y)
 {
         USING_ATLAS_CORE_NS;
         USING_ATLAS_MATH_NS;
+#ifdef PROG_DEBUG
         Log::log(Log::SeverityLevel::DEBUG, "Mouse Scroll Event: (" + std::to_string(x) + ", " + std::to_string(y) + ")");
+#endif
         mCamera.mouseScroll(Point2(x, y));
 }
 
