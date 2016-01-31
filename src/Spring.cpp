@@ -141,13 +141,13 @@ void Spring::moveFixed(atlas::math::Vector vec)
 
 AngularSpring::AngularSpring() :
         mPaused(false),
-        mLength(50.f),
-        mDampen(6.5f),
-        mK(0.01f),
-        mMass(10.f),
-        mRest(glm::vec2(glm::radians(45.f), glm::radians(45.f))),
+        mLength(5.f),
+        mDampen(0.01f),
+        mK(0.1f),
+        mMass(1.f),
+        mRest(0.f, glm::radians(-20.f)),
         mVelocity(0.f),
-        mPosition(glm::vec2(glm::radians(45.f), glm::radians(45.f)))
+        mPosition(glm::radians(45.f), glm::radians(45.f))
 {
         USING_ATLAS_GL_NS;
         USING_ATLAS_CORE_NS;
@@ -167,10 +167,12 @@ AngularSpring::AngularSpring() :
                 glm::vec3(mLength, mPosition)
         };
 
-        glBufferData(GL_ARRAY_BUFFER, 2* sizeof(Vector), points.data(), GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, 2 * sizeof(Vector), points.data(), GL_DYNAMIC_DRAW);
 
         // Create Shaders
         const std::string shader_dir = generated::ShaderPaths::getShaderDirectory();
+        // The Angular vertex shader converts from spherical to Cartesian
+        // coordinates
         std::vector<ShaderInfo> shaders
         {
                 {GL_VERTEX_SHADER, shader_dir + "angular.vs.glsl"},
@@ -201,57 +203,63 @@ AngularSpring::~AngularSpring()
         glDeleteBuffers(1, &mVbo);
 }
 
-void AngularSpring::updateGeometry(atlas::utils::Time const& t)
+void AngularSpring::stepGeometry(atlas::utils::Time const& t)
 {
-        // Okay, be all springy in the spherical coordinate system
-        if(mPaused) return;
-        USING_ATLAS_MATH_NS;
         USING_ATLAS_CORE_NS;
+        glm::vec2 x = glm::vec2(mPosition.x - mRest.x, mPosition.y - mRest.y);
+        glm::vec2 F = glm::vec2(-mK * x) - glm::vec2(mDampen * mVelocity);
 
-        Vector F = Vector(0.f);
-        // Gravity - dampening
-        F = glm::vec3(-9.807, 3.14159265382, 0) - glm::vec3(mLength, mVelocity.x * mDampen, mVelocity.y * mDampen);
+        Log::log(Log::SeverityLevel::DEBUG, "Force: (" +
+                        std::to_string(mLength) + ", " +
+                        std::to_string(F.x) + ", " +
+                        std::to_string(F.y) + ")");
 
+        glm::vec2 a = F / mMass;
 
-        // Internal force
+        Log::log(Log::SeverityLevel::DEBUG, "Acceleration: (" +
+                        std::to_string(mLength) + ", " +
+                        std::to_string(a.x) + ", " +
+                        std::to_string(a.y) + ")");
 
-        // Finternal = -K * x
-        F += glm::vec3(1, -mK * (mRest.x - mPosition.x), -mK * (mRest.y -  mPosition.y));
-        glm::vec3 a = glm::vec3(F.x / mMass, F.y, F.z);
-        glm::vec3 s = glm::vec3(1.f,
-                        mVelocity.x * t.deltaTime + 0.5f * a.y * t.deltaTime * t.deltaTime,
-                        mVelocity.y * t.deltaTime + 0.5f * a.z * t.deltaTime * t.deltaTime);
+        glm::vec2 v = mVelocity + a * 0.5f;
 
-        mVelocity = glm::vec2(mVelocity.x * t.deltaTime, mVelocity.y * t.deltaTime);
-        mPosition = glm::vec2(mPosition.x + s.y, mPosition.y + s.z);
+        Log::log(Log::SeverityLevel::DEBUG, "Velocity: (" +
+                        std::to_string(mLength) + ", " +
+                        std::to_string(v.x) + ", " +
+                        std::to_string(v.y) + ")");
+
+        glm::vec2 p = mPosition + v * 0.5f;
+
+        Log::log(Log::SeverityLevel::DEBUG, "Position: (" +
+                        std::to_string(mLength) + ", " +
+                        std::to_string(p.x) + ", " +
+                        std::to_string(p.y) + ")");
+
+        mVelocity = v;
+        mPosition = p;
+
+        const std::array<glm::vec3, 2> points {
+                glm::vec3(0, mRest),
+                glm::vec3(mLength, mPosition)
+        };
 
         glBindVertexArray(mVao);
         glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-
-        const std::array<glm::vec3, 2> coords { glm::vec3(0.f), glm::vec3(1.f, mPosition) };
-
         glBufferSubData(GL_ARRAY_BUFFER,
-                        0, sizeof(coords),
-                        coords.data());
+                        0,
+                        sizeof(glm::vec3) * 2,
+                        points.data());
+
+        glBindBuffer(GL_ARRAY_BUFFER, mVbo);
         glBindVertexArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
-
-
-        // "acceleration of angle" + "velocity of angle" + "velocity of angle"
-        // ml^2 d_theta^2/d_t^2 + c d_t
-
-        // Normal spring
-        // F = -kx  ( spring constant * displacement)
-        // F = -k * delta_theta (spring constant * displacement)
-
-
-        //F = mK * (mAngle - mRestAngle)
 
 }
 
-
+void AngularSpring::updateGeometry(atlas::utils::Time const& t)
+{
+        if(mPaused) return;
+        stepGeometry(t);
+}
 
 void AngularSpring::renderGeometry(atlas::math::Matrix4 proj,
                 atlas::math::Matrix4 view)

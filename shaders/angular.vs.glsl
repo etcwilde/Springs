@@ -5,8 +5,10 @@ uniform mat4 MVP;
 
 void main()
 {
+
         gl_Position = MVP * vec4(
-                        vPosition.x * cos(vPosition.y) * sin(vPosition.z),
-                        vPosition.x * sin(vPosition.y) * cos(vPosition.z),
-                        vPosition.x * cos(vPosition.z), 1.);
+                        vPosition.x * sin(vPosition.y) * cos(vPosition.z), // y
+                        vPosition.x * cos(vPosition.z),  // z
+                        vPosition.x * cos(vPosition.y) * sin(vPosition.z), // x
+                        1.);
 }

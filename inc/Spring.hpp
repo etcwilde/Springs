@@ -54,29 +54,23 @@ class AngularSpring : public atlas::utils::Geometry
                                 atlas::math::Matrix4 view) override;
                 void resetGeometry() override;
 
+                void stepGeometry(atlas::utils::Time const& t);
+
         private:
                 bool mPaused;
-
                 float mLength;  // Length of the stick
-                // float mAngle;   // Current Angle of spring (isotropic system)
-                //float mRestAngle;
                 float mDampen;
                 float mK;
 
                 float mMass;
 
-
-
-                // Only the final points will be in Cartesian, the rest are spherical
-                // The radius component is stored in mLength
                 glm::vec2 mRest;
                 glm::vec2 mVelocity;
                 glm::vec2 mPosition;
 
-
-                //std::array<atlas::math::Vector, 2> mPoints; // Cartesian Coordinates
-
                 GLuint mVao;
                 GLuint mVbo;
 };
+
+
 #endif//__SPRING_HPP

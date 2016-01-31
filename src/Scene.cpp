@@ -185,6 +185,12 @@ void AngularScene::keyPressEvent(int key, int scancode, int action, int modes)
         if(action == GLFW_PRESS)
         {
                 if(key == GLFW_KEY_SPACE) mPaused = !mPaused;
+                else if (key == GLFW_KEY_S)
+                {
+                        mTime.deltaTime = 0.5f;
+                        mTime.totalTime += 0.5f;
+                        mSpring.stepGeometry(mTime);
+                }
         }
 }
 
@@ -194,8 +200,8 @@ void AngularScene::updateScene(double time)
         {
                 mTime.deltaTime = static_cast<float>(time) - mTime.currentTime;
                 mTime.totalTime += static_cast<float>(time);
-                mTime.totalTime = static_cast<float>(time);
-                mTime.deltaTime *= 2;
+                mTime.currentTime= static_cast<float>(time);
+                mTime.deltaTime /= 10000.f;
 
                 mSpring.updateGeometry(mTime);
         }
