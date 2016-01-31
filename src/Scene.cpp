@@ -100,6 +100,20 @@ void LinearScene::keyPressEvent(int key, int scancode, int action, int modes)
                                 case GLFW_KEY_D:
                                         mSpring.moveFixed(Vector(0, 0, 1));
                                         break;
+                                case GLFW_KEY_Q:
+                                        mSpring.changeLength(1.25);
+                                        break;
+                                case GLFW_KEY_E:
+                                        mSpring.changeLength(0.25);
+                                        break;
+                                case GLFW_KEY_Z:
+                                        mSpring.changeMass(0.5f);
+                                        break;
+                                case GLFW_KEY_X:
+                                        mSpring.changeMass(-0.5f);
+                                        break;
+
+
                         }
                 }
         }
@@ -189,12 +203,51 @@ void AngularScene::keyPressEvent(int key, int scancode, int action, int modes)
         if(action == GLFW_PRESS)
         {
                 if(key == GLFW_KEY_SPACE) mPaused = !mPaused;
-                else if (key == GLFW_KEY_S)
+                else if (key == GLFW_KEY_S && modes == GLFW_MOD_CONTROL)
                 {
                         mTime.deltaTime = 0.5f;
                         mTime.totalTime += 0.5f;
                         mSpring.stepGeometry(mTime);
                 }
+                else if (key == GLFW_KEY_R) mSpring.resetGeometry();
+                else
+                {
+                        USING_ATLAS_MATH_NS;
+                        switch(key)
+                        {
+                                case GLFW_KEY_Q:
+                                        mSpring.changeRest(glm::vec3(1.25f, 0.f, 0.f));
+                                        break;
+                                case GLFW_KEY_E:
+                                        mSpring.changeRest(glm::vec3(0.25, 0.f, 0.f));
+                                        break;
+                                case GLFW_KEY_W:
+                                        mSpring.changeRest(glm::vec3(0.f, 1.f, 0.f));
+                                        break;
+                                case GLFW_KEY_S:
+                                        mSpring.changeRest(glm::vec3(0.f, -1.f, 0.f));
+                                        break;
+                                case GLFW_KEY_A:
+                                        mSpring.changeRest(glm::vec3(0.f, 0.f, 1.f));
+                                        break;
+                                case GLFW_KEY_D:
+                                        mSpring.changeRest(glm::vec3(0.f, 0.f, -1.f));
+                                        break;
+                                case GLFW_KEY_Z:
+                                        mSpring.changeMass(0.5f);
+                                        break;
+                                case GLFW_KEY_X:
+                                        mSpring.changeMass(-0.5f);
+                                        break;
+                                case GLFW_KEY_F:
+                                        mSpring.changeK(0.5f);
+                                        break;
+                                case GLFW_KEY_G:
+                                        mSpring.changeK(-0.5f);
+                                        break;
+                        }
+                }
+
         }
 }
 

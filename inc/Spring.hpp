@@ -25,6 +25,9 @@ class Spring : public atlas::utils::Geometry
 
                 void moveFixed(atlas::math::Vector);
 
+                void changeLength(float l) { mLength *= l; }
+                void changeMass(float m) { mMass[1] += m; }
+
         private:
 
                 std::array<atlas::math::Vector, 2> mPoints;
@@ -54,6 +57,13 @@ class AngularSpring : public atlas::utils::Geometry
                                 atlas::math::Matrix4 view) override;
 
                 void stepGeometry(atlas::utils::Time const& t);
+
+                void resetGeometry() override;
+
+                // The vector is in degrees
+                void changeRest(glm::vec3 d);
+                void changeMass(float mass) { mMass += mass; }
+                void changeK(float k) { mK += k; }
 
         private:
                 bool mPaused;

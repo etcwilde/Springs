@@ -277,6 +277,16 @@ void AngularSpring::updateGeometry(atlas::utils::Time const& t)
         stepGeometry(t);
 }
 
+void AngularSpring::changeRest(glm::vec3 d)
+{
+        // x component: length
+        mLength *= d.x;
+        // y is the theta
+        // z is the phi
+        mRest = mRest + glm::vec2(glm::radians(d.y), glm::radians(d.z));
+
+}
+
 void AngularSpring::renderGeometry(atlas::math::Matrix4 proj,
                 atlas::math::Matrix4 view)
 {
@@ -290,4 +300,27 @@ void AngularSpring::renderGeometry(atlas::math::Matrix4 proj,
         glDrawArrays(GL_LINES, 0, 2);
         glBindVertexArray(0);
         mShaders[0]->disableShaders();
+}
+
+void AngularSpring::resetGeometry()
+{
+        mVelocity = glm::vec2(0.f);
+        mPosition = glm::vec2(0.f, glm::radians(45.f));
+
+        const std::array<glm::vec3, 2> points
+        {
+                glm::vec3(0.f),
+                glm::vec3(mLength, mPosition)
+        };
+
+
+        // Upload reset vertex data
+        glBindVertexArray(mVao);
+        glBindBuffer(GL_ARRAY_BUFFER, mVbo);
+        glBufferSubData(GL_ARRAY_BUFFER,
+                        0, sizeof(glm::vec3) * 2,
+                        points.data());
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 }
