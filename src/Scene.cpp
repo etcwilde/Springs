@@ -222,16 +222,16 @@ void AngularScene::keyPressEvent(int key, int scancode, int action, int modes)
                                         mSpring.changeRest(glm::vec3(0.25, 0.f, 0.f));
                                         break;
                                 case GLFW_KEY_W:
-                                        mSpring.changeRest(glm::vec3(0.f, 1.f, 0.f));
+                                        mSpring.changeRest(glm::vec3(1.f, 1.1f, 0.f));
                                         break;
                                 case GLFW_KEY_S:
-                                        mSpring.changeRest(glm::vec3(0.f, -1.f, 0.f));
+                                        mSpring.changeRest(glm::vec3(1.f, -1.1f, 0.f));
                                         break;
                                 case GLFW_KEY_A:
-                                        mSpring.changeRest(glm::vec3(0.f, 0.f, 1.f));
+                                        mSpring.changeRest(glm::vec3(1.f, 0.f, 1.f));
                                         break;
                                 case GLFW_KEY_D:
-                                        mSpring.changeRest(glm::vec3(0.f, 0.f, -1.f));
+                                        mSpring.changeRest(glm::vec3(1.f, 0.f, -1.f));
                                         break;
                                 case GLFW_KEY_Z:
                                         mSpring.changeMass(0.5f);

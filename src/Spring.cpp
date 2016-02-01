@@ -1,4 +1,5 @@
 #include "Spring.hpp"
+#include <atlas/core/Float.hpp>
 
 // Debug
 #include <atlas/core/Log.hpp>
@@ -149,10 +150,10 @@ void Spring::moveFixed(atlas::math::Vector vec)
 
 AngularSpring::AngularSpring() :
         mPaused(false),
-        mLength(5.f),
+        mLength(5.1f),
         mDampen(0.01f),
         mK(0.1f),
-        mMass(1.f),
+        mMass(1.1f),
         mRest(0.f, glm::radians(-20.f)),
         mVelocity(0.f),
         mPosition(0.f, glm::radians(45.f))
@@ -223,8 +224,10 @@ void AngularSpring::stepGeometry(atlas::utils::Time const& t)
                         std::to_string(F.x) + ", " +
                         std::to_string(F.y) + ")");
 #endif
+        glm::vec2 a;
+        if (atlas::core::isZero(mMass))  a = F / 0.0001f;
+        else a = F / mMass;
 
-        glm::vec2 a = F / mMass;
 
 #ifdef PROG_DEBUG
         Log::log(Log::SeverityLevel::DEBUG, "Acceleration: (" +
@@ -280,7 +283,18 @@ void AngularSpring::updateGeometry(atlas::utils::Time const& t)
 void AngularSpring::changeRest(glm::vec3 d)
 {
         // x component: length
+        if(atlas::core::isZero(d.x))
+        {
+#ifdef PROG_DEBUG
+                USING_ATLAS_CORE_NS;
+                Log::log(Log::SeverityLevel::WARNING,
+                                "Seting the length to zero makes no sense; No changes made");
+#endif
+                        d.x = 1.f;
+        }
+
         mLength *= d.x;
+
         // y is the theta
         // z is the phi
         mRest = mRest + glm::vec2(glm::radians(d.y), glm::radians(d.z));
